@@ -62,6 +62,15 @@ public class Console {
   }
   
   /**
+   * Warn.
+   *
+   * @param pMessage the message
+   */
+  public void warn(String pMessage) {
+    mLogger.warn(pMessage);
+  }
+  
+  /**
    * Trace.
    *
    * @param pMessage the message

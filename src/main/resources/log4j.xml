@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration debug="true" xmlns:log4j="http://jakarta.apache.org/log4j/">
     <appender class="org.apache.log4j.RollingFileAppender" name="RollingTextFile">
-        <param value="log.txt" name="File"/>
+        <param value="logs/ssr.log" name="File"/>
         <param value="5" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
         <layout class="org.apache.log4j.PatternLayout"/>
@@ -10,18 +10,102 @@
     <appender class="org.apache.log4j.ConsoleAppender" name="Console">
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d{ISO8601} %-5p [%t] %c{2} (%F:%L).%M() - %m%n" name="ConversionPattern"/>
+            
         </layout>
     </appender>
-    <appender class="org.apache.log4j.FileAppender" name="TextFile">
+    <appender class="org.apache.log4j.FileAppender" name="DefaultTextFile">
         <param value="false" name="Append"/>
-        <param value="messages.log" name="File"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d{ISO8601} %-5p [%t] %c{2} (%F:%L).%M() - %m%n" name="ConversionPattern"/>
-        </layout>
+        <param value="logs/default.log" name="File"/>
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
     </appender>
+    
+    <!-- Level specific log files -->
+    <appender class="org.apache.log4j.FileAppender" name="InfoTextFile">
+        <param value="false" name="Append"/>
+        <param value="logs/info.log" name="File"/>
+        
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
+        
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="INFO" />
+            <param name="AcceptOnMatch" value="true" />
+        </filter>
+        <filter class="org.apache.log4j.varia.DenyAllFilter" />
+    </appender>
+    
+    <appender class="org.apache.log4j.FileAppender" name="ErrorTextFile">
+        <param value="false" name="Append"/>
+        <param value="logs/error.log" name="File"/>
+        
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
+        
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="ERROR" />
+            <param name="AcceptOnMatch" value="true" />
+        </filter>
+        <filter class="org.apache.log4j.varia.DenyAllFilter" />
+    </appender>
+    
+    <appender class="org.apache.log4j.FileAppender" name="WarnTextFile">
+        <param value="false" name="Append"/>
+        <param value="logs/warn.log" name="File"/>
+        
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
+        
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="WARN" />
+            <param name="AcceptOnMatch" value="true" />
+        </filter>
+        <filter class="org.apache.log4j.varia.DenyAllFilter" />
+    </appender>
+    
+    <appender class="org.apache.log4j.FileAppender" name="TraceTextFile">
+        <param value="false" name="Append"/>
+        <param value="logs/trace.log" name="File"/>
+        
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
+        
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="TRACE" />
+            <param name="AcceptOnMatch" value="true" />
+        </filter>
+        <filter class="org.apache.log4j.varia.DenyAllFilter" />
+    </appender>
+    
+    <appender class="org.apache.log4j.FileAppender" name="DebugTextFile">
+        <param value="false" name="Append"/>
+        <param value="logs/debug.log" name="File"/>
+        
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+			<param name="ConversionPattern" value="t:%-6r [%.20t] %-5p %d{MMM-dd-yyyy HH:mm:ss,SSS} [%x]  %c{1} - %m%n" />
+		</layout>
+        
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="DEBUG" />
+            <param name="AcceptOnMatch" value="true" />
+        </filter>
+        <filter class="org.apache.log4j.varia.DenyAllFilter" />
+    </appender>
+    
     <root>
         <level value="INFO"/>
-        <appender-ref ref="TextFile"/>
+        <appender-ref ref="DefaultTextFile" />
         <appender-ref ref="Console" />
+        
+        <appender-ref ref="InfoTextFile" />
+        <appender-ref ref="ErrorTextFile" />
+        <appender-ref ref="WarnTextFile" />
+        <appender-ref ref="TraceTextFile" />
+        <appender-ref ref="DebugTextFile" />
     </root>
 </log4j:configuration>
