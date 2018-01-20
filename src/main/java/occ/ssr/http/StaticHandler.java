@@ -10,9 +10,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.undertow.Handlers;
+import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.resource.PathResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
 import occ.ssr.Settings;
 
 /**
@@ -107,7 +109,12 @@ public class StaticHandler implements HttpHandler {
    */
   private void buildHandler(String pStaticDir) {
     
-    HttpHandler resourceHandler = Handlers.resource(new PathResourceManager(Paths.get(pStaticDir), 100));
+    ResourceHandler resourceHandler = Handlers.resource(new PathResourceManager(Paths.get(pStaticDir), 100));
+    
+    if (mSettings.getStaticCacheTime() > 0) {
+      resourceHandler.setCachable(Predicates.truePredicate());
+      resourceHandler.setCacheTime(mSettings.getStaticCacheTime());
+    }
     
     File staticDir = new File(pStaticDir);
     

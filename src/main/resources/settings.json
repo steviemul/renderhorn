@@ -3,7 +3,8 @@
   "http": {
     "host": "localhost",
     "port": "10080",
-    "sslPort": "10443"
+    "sslPort": "10443",
+    "staticCacheTime": 60000
   },
   "http2": {
     "enabled": true,
@@ -11,7 +12,7 @@
   },
   "renderer": {
     "main": "globals/render.js",
-    "watchingScripts":true,
+    "watchingScripts": true,
     "staticDirs": [
       "Apps/Couldleak/pkg",
       "Apps/Couldleak/public"

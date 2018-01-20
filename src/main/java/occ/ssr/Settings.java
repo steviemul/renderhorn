@@ -25,6 +25,7 @@ public class Settings {
   private static final String HTTP = "http";
   private static final String HOST = "host";
   private static final String PORT = "port";
+  private static final String STATIC_CACHE_TIME = "staticCacheTime";
   private static final String SSL_PORT = "sslPort";
   private static final String HTTP2 = "http2";
   private static final String ENABLED = "enabled";
@@ -93,6 +94,17 @@ public class Settings {
    */
   public int getHttpsPort() {
     return mHttpsPort;
+  }
+  
+  private int mStaticCacheTime;
+  
+  /**
+   * Gets the static cache time.
+   *
+   * @return the static cache time
+   */
+  public int getStaticCacheTime() {
+    return mStaticCacheTime;
   }
   
   private boolean mHttp2Enabled;
@@ -216,6 +228,7 @@ public class Settings {
     mHttpHost = http.getString(HOST);
     mHttpPort = http.getInt(PORT);
     mHttpsPort = http.getInt(SSL_PORT);
+    mStaticCacheTime = http.getInt(STATIC_CACHE_TIME);
     
     JSONObject http2 = pSettings.getJSONObject(HTTP2);
     mHttp2Enabled = http2.getBoolean(ENABLED);
