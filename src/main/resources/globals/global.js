@@ -16,10 +16,19 @@ var console = {
   debug: function(pMessage) {
     occ.console.debug(pMessage);
   },
+  log: function(pMessage) {
+    occ.console.info(pMessage);
+  },
   assert: function (pExpr, pMessage) {
     if (pExpr == false) {
       occ.console.error(pMessage);
     }
+  },
+  time: function (pTimer) {
+    occ.console.time(pTimer);
+  },
+  timeEnd: function(pTimer) {
+    occ.console.timeEnd(pTimer);
   }
 };
 

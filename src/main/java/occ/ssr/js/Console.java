@@ -1,5 +1,9 @@
 package occ.ssr.js;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -9,6 +13,8 @@ import org.apache.commons.logging.LogFactory;
 public class Console {
   
   private final Log mLogger;
+  
+  private Map<String, Long> mTimers = new HashMap<>();
   
   /**
    * Instantiates a new console.
@@ -64,4 +70,31 @@ public class Console {
     mLogger.trace(pMessage);
   }
   
+  /**
+   * Time.
+   *
+   * @param pTimer the timer
+   */
+  public void time(String pTimer) {
+    Long now = new Date().getTime();
+    
+    mTimers.put(pTimer, now);
+  }
+  
+  /**
+   * Time end.
+   *
+   * @param pTimer the timer
+   */
+  public void timeEnd(String pTimer) {
+    
+    if (mTimers.containsKey(pTimer)) {
+      long now = new Date().getTime();
+      long start = mTimers.get(pTimer);
+          
+      info("Timer " + pTimer + " took " + (now - start) + "ms.");
+      
+      mTimers.remove(pTimer);
+    }
+  }
 }

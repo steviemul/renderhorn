@@ -129,7 +129,7 @@ public class RenderingServer {
         .setContextPath(API_PATH)
         .setDeploymentName("api.war")
         .addServlet(servlet("Jersey", org.glassfish.jersey.servlet.ServletContainer.class)
-            .addInitParam("javax.ws.rs.Application", "occ.renderbang.rest.OperationsApplication")
+            .addInitParam("javax.ws.rs.Application", "occ.ssr.rest.OperationsApplication")
             .addInitParam("jersey.config.server.provider.packages", "com.fasterxml.jackson.jaxrs.json")
             .addMapping("/*"));
     

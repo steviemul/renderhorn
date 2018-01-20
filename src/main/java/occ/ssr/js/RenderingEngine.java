@@ -59,6 +59,8 @@ public class RenderingEngine {
   private Object mRenderer = null;
   private static final String RENDER_METHOD = "render";
   
+  private Map<String, String> mRenderedPages = new HashMap<>();
+  
   /**
    * Instantiates a new engine.
    *
@@ -83,40 +85,47 @@ public class RenderingEngine {
     
     Date start = new Date();
     
-    try {
-      Invocable invocableEngine = (Invocable) mJSEngine;
-      
-      Response response = new Response(pExchange, mSettings);
-      
-      Object[] invokeArgs = {response};
-      
-      result = (String) invocableEngine.invokeMethod(mRenderer, RENDER_METHOD, invokeArgs);
+    if (mSettings.isCachingPages() && mRenderedPages.containsKey(pExchange.getRequestPath())) {
+      result = mRenderedPages.get(pExchange.getRequestPath());
       
       Date end = new Date();
       
-      mLogger.info("Render took " + (end.getTime() - start.getTime()) + "ms");
+      mLogger.info("Render took " + (end.getTime() - start.getTime()) + "ms (from cache)");
     }
-    catch (NoSuchMethodException | ScriptException e) {
-      mLogger.error("Error performing render", e);
+    else {
+      try {
+        Invocable invocableEngine = (Invocable) mJSEngine;
+        
+        Response response = new Response(pExchange, mSettings);
+        
+        Object[] invokeArgs = {response};
+        
+        result = (String) invocableEngine.invokeMethod(mRenderer, RENDER_METHOD, invokeArgs);
+        
+        Date end = new Date();
+        
+        mLogger.info("Render took " + (end.getTime() - start.getTime()) + "ms");
+        
+        if (mSettings.isCachingPages()) {
+          mRenderedPages.put(pExchange.getRequestPath(), result);
+        }
+      }
+      catch (NoSuchMethodException | ScriptException e) {
+        mLogger.error("Error performing render", e);
+      }
     }
+    
     
     return result;
   }
   
   /**
-   * Reload.
+   * Clear cache.
    */
-  public void reload() throws Exception {
+  public void clearCache() throws Exception {
+    mRenderedPages.clear();
     
-    mLogger.info("Reloading Environment");
-    
-    try {
-      initEnvironment();  
-    }
-    catch (Exception e) {
-      mLogger.error("Unable to reload environment.");
-      throw e;
-    }
+    mLogger.info("Page cache cleared.");
   }
   
   /**
@@ -218,10 +227,6 @@ public class RenderingEngine {
         mJSEngine.eval(source);
         
         packageToLoad.setLoaded(true);
-        
-        if (mSettings.isWatchingScripts()) {
-          
-        }
         
         mLogger.info("Successfully loaded package " + packageToLoad);
       }

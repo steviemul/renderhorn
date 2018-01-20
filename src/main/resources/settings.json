@@ -12,7 +12,7 @@
   },
   "renderer": {
     "main": "globals/render.js",
-    "watchingScripts": true,
+    "cachePages": false,
     "staticDirs": [
       "Apps/Couldleak/pkg",
       "Apps/Couldleak/public"

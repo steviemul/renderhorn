@@ -36,7 +36,7 @@ public class Settings {
   private static final String INIT_SCRIPTS = "initScripts";
   private static final String PACKAGE_LOCATIONS = "packageLocations";
   private static final String INIT_PACKAGES = "initPackages";
-  private static final String WATCHING_SCRIPTS = "watchingScripts";
+  private static final String CACHE_PAGES = "cachePages";
   
   //---------------------------------------------------------------------------
   // Properties
@@ -140,15 +140,15 @@ public class Settings {
     return mMainScript;
   }
   
-  private boolean mWatchingScripts;
+  private boolean mCachingPages;
   
   /**
    * Checks if is watching scripts.
    *
    * @return true, if is watching scripts
    */
-  public boolean isWatchingScripts() {
-    return mWatchingScripts;
+  public boolean isCachingPages() {
+    return mCachingPages;
   }
   
   private List<String> mStaticDirs;
@@ -236,7 +236,7 @@ public class Settings {
     
     JSONObject renderer = pSettings.getJSONObject(RENDERER);
     mMainScript = renderer.getString(MAIN);
-    mWatchingScripts = renderer.getBoolean(WATCHING_SCRIPTS);
+    mCachingPages = renderer.getBoolean(CACHE_PAGES);
     
     mStaticDirs = getItemsAsList(renderer.getJSONArray(STATIC_DIRS));
     

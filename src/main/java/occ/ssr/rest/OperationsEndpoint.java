@@ -22,7 +22,7 @@ import occ.ssr.Registry;
 public class OperationsEndpoint {
 
   private static Log mLogger = LogFactory.getLog(OperationsEndpoint.class);
-  private static final String OP_RELOAD = "reload";
+  private static final String OP_CLEAR = "clear";
   
   /**
    * Process.
@@ -37,8 +37,8 @@ public class OperationsEndpoint {
     Map<String, String> result = new HashMap<>();
     
     try {
-      if (OP_RELOAD.equals(op)) {
-        Registry.getRenderingEngine().reload();
+      if (OP_CLEAR.equals(op)) {
+        Registry.getRenderingEngine().clearCache();
         result.put("result", "success");
       }
     }
