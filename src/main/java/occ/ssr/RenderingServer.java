@@ -33,6 +33,7 @@ import occ.ssr.js.RenderingEngine;
 public class RenderingServer {
   
   private static Log mLogger = LogFactory.getLog(RenderingServer.class);
+  
   private final RenderingEngine mEngine;
   private final Settings mSettings;
   private final static String API_PATH = "/api";

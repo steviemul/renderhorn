@@ -30,22 +30,32 @@ public class OperationsEndpoint {
    * @param op the op
    * @return the response
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response process(@QueryParam("op") final String op) {
     
-    Map<String, String> result = new HashMap<>();
+    Object result = "";
     
     try {
       if (OP_CLEAR.equals(op)) {
+        Map response = new HashMap<>();
+        
         Registry.getRenderingEngine().clearCache();
-        result.put("result", "success");
+        response.put("result", "success");
+        
+        result = response;
       }
     }
     catch (Exception e) {
       mLogger.error("Failed to reload engine.", e);
-      result.put("result", "failure");
-      result.put("message", e.getMessage());
+      
+      Map response = new HashMap<>();
+      
+      response.put("result", "failure");
+      response.put("message", e.getMessage());
+      
+      result = response;
     }
     
     Response response = Response.ok()

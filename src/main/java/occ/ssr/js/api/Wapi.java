@@ -1,4 +1,4 @@
-package occ.ssr.data;
+package occ.ssr.js.api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

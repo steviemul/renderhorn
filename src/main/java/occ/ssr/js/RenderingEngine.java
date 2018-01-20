@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 import io.undertow.server.HttpServerExchange;
 import occ.ssr.Settings;
-import occ.ssr.data.Wapi;
+import occ.ssr.js.api.Wapi;
 import occ.ssr.renderer.http.Response;
 
 /**
@@ -126,6 +126,18 @@ public class RenderingEngine {
     mRenderedPages.clear();
     
     mLogger.info("Page cache cleared.");
+  }
+  
+  /**
+   * Dump env.
+   *
+   * @return the string
+   */
+  @SuppressWarnings("rawtypes")
+  public Map dumpEnv() {
+    Map bindings = (Map) mBindings;
+    
+    return bindings;
   }
   
   /**
