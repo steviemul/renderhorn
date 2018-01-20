@@ -1,0 +1,192 @@
+{
+  "pageRepository": {
+    "pages": {
+      "current": "home",
+      "home": {
+        "id": "home",
+        "title": "Home - OCC",
+        "description": "",
+        "keywords": "",
+        "metaTags": [],
+        "header": [
+          "header",
+          "megaMenu"
+        ],
+        "main": [
+          "recommentations"
+        ],
+        "footer": [
+          "footer"
+        ],
+        "global": []
+      }
+    },
+    "widgets": {
+      "header": {
+        "id": "header",
+        "componentId": "headerWidget",
+        "requiredLinks": []
+      },
+      "megaMenu": {
+        "id": "megaMenu",
+        "componentId": "megaMenu",
+        "requiredLinks": []
+      },
+      "recommentations": {
+        "id": "recommentations",
+        "componentId": "recommendations",
+        "requiredLinks": []
+      },
+      "footer": {
+        "id": "footer",
+        "componentId": "footer",
+        "requiredLinks": []
+      }
+    },
+    "components": {
+      "headerWidget": {
+        "packageId": "couldleak-header"
+      },
+      "footer": {
+        "packageId": "couldleak-footer"
+      },
+      "megaMenu": {
+        "packageId": "couldleak-mega-menu"
+      },
+      "notifications": {
+        "packageId": "couldleak-notifications"
+      },
+      "recommendations": {
+        "packageId": "couldleak-dummy"
+      },
+      "recommendationsTracking": {
+        "packageId": "couldleak-dummy"
+      },
+      "storeConfigurationOverride": {
+        "packageId": "couldleak-dummy"
+      },
+      "shoppingCartSummary": {
+        "packageId": "couldleak-dummy"
+      },
+      "promotion": {
+        "packageId": "couldleak-dummy"
+      },
+      "cartShippingDetails": {
+        "packageId": "couldleak-dummy"
+      },
+      "orderSummary": {
+        "packageId": "couldleak-dummy"
+      },
+      "webContent": {
+        "packageId": "couldleak-dummy"
+      },
+      "spaceInviteAcceptWidget": {
+        "packageId": "couldleak-dummy"
+      },
+      "wishListCanvasJSWidgetDescriptor": {
+        "packageId": "couldleak-dummy"
+      },
+      "spaceWelcomeWidget": {
+        "packageId": "couldleak-dummy"
+      },
+      "spaceHeaderWidget": {
+        "packageId": "couldleak-dummy"
+      },
+      "spaceContentWidget": {
+        "packageId": "couldleak-dummy"
+      },
+      "overlayedGuidedNavigation": {
+        "packageId": "couldleak-dummy"
+      },
+      "breadcrumb": {
+        "packageId": "couldleak-dummy"
+      },
+      "productListing": {
+        "packageId": "couldleak-product-listing"
+      },
+      "productDetails": {
+        "packageId": "couldleak-dummy"
+      }
+    },
+    "packages": {
+      "react": {
+        "id": "react",
+        "src": "https: //cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.production.min.js"
+      },
+      "react-dom": {
+        "id": "react-dom",
+        "src": "https: //cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.production.min.js"
+      },
+      "redux": {
+        "id": "redux",
+        "src": "https: //cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"
+      },
+      "react-redux": {
+        "id": "react-redux",
+        "src": "https: //cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.6/react-redux.min.js"
+      },
+      "prop-types": {
+        "id": "prop-types",
+        "src": "https: //cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.min.js"
+      },
+      "couldleak": {
+        "id": "couldleak",
+        "src": "/couldleak/dist/couldleak.js"
+      },
+      "couldleak-main": {
+        "id": "couldleak-main",
+        "src": "/couldleak-main/dist/couldleak-main.js"
+      },
+      "occ-selectors": {
+        "id": "occ-selectors",
+        "src": "/Common/occ-selectors/dist/occ-selectors.js"
+      },
+      "occ-utils": {
+        "id": "occ-utils",
+        "src": "/Common/occ-utils/dist/occ-utils.js"
+      },
+      "occ-package-loader": {
+        "id": "occ-package-loader",
+        "src": "/Common/occ-package-loader/dist/occ-package-loader.js"
+      },
+      "occ-component-loader": {
+        "id": "occ-component-loader",
+        "src": "/Common/occ-component-loader/dist/occ-component-loader.js"
+      },
+      "occ-react-ui": {
+        "id": "occ-react-ui",
+        "src": "/UI/occ-react-ui/dist/occ-react-ui.js"
+      },
+      "couldleak-dummy": {
+        "id": "couldleak-dummy",
+        "src": "/Components/couldleak-dummy/dist/couldleak-dummy.js",
+        "lazyload": false
+      },
+      "couldleak-header": {
+        "id": "couldleak-header",
+        "src": "/Components/couldleak-header/dist/couldleak-header.js",
+        "lazyload": false
+      },
+      "couldleak-footer": {
+        "id": "couldleak-footer",
+        "src": "/Components/couldleak-footer/dist/couldleak-footer.js",
+        "lazyload": false
+      },
+      "couldleak-mega-menu": {
+        "id": "couldleak-mega-menu",
+        "src": "/Components/couldleak-mega-menu/dist/couldleak-mega-menu.js",
+        "lazyload": false
+      },
+      "couldleak-notifications": {
+        "id": "couldleak-notifications",
+        "src": "/Components/couldleak-notifications/dist/couldleak-notifications.js",
+        "lazyload": false
+      },
+      "couldleak-product-listing": {
+        "id": "couldleak-product-listing",
+        "src": "/Components/couldleak-product-listing/dist/couldleak-product-listing.js",
+        "lazyload": false
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Cloudlake Server",
+  "http": {
+    "host": "localhost",
+    "port": "10080",
+    "sslPort": "10443"
+  },
+  "http2": {
+    "enabled": true,
+    "pushEnabled": true
+  },
+  "renderer": {
+    "main": "globals/render.js",
+    "watchingScripts":true,
+    "staticDirs": [
+      "Apps/Couldleak/pkg",
+      "Apps/Couldleak/public"
+    ],
+    "initScripts": {
+      "1": "globals/global.js",
+      "2": "es6/es6-shim.min.js",
+      "3": "react/react.production.min.js",
+      "4": "react/react-dom.production.min.js",
+      "5": "react/react-dom-server.browser.production.min.js",
+      "6": "globals/init.js"
+    },
+    "packageLocations": [
+      "Apps/Couldleak/pkg",
+      "Framework/pkg"
+    ],
+    "initPackages": {
+      "1": "occ-component-loader",
+      "2": "occ-react-ui",
+      "3": "couldleak-server"
+    }
+  }
+}
