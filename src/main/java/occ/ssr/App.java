@@ -1,18 +1,23 @@
 package occ.ssr;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 
 import occ.ssr.js.RenderingEngine;
 
 /**
  * The Class App.
+ * 
+ * Entry point for application. This initializes the javacript engine, server etc.
  */
 public class App {
   
   private static Log mLogger = LogFactory.getLog(App.class);
+  
   private static final String SETTINGS_JSON = "settings.json";
   private static final String APP_DIR = "app.dir";
   
@@ -24,11 +29,9 @@ public class App {
   public static void main(String[] args) {
     
     try {
-      File appDir = getApplicationDirectory();
+      Settings settings = getSettings();
       
-      mLogger.info("Application directory is " + appDir.getAbsolutePath());
-
-      Settings settings = new Settings(SETTINGS_JSON, appDir);
+      mLogger.info("Application directory is " + settings.getRootDirectory().getAbsolutePath());
       
       mLogger.info("Initializing Renderer.");
       
@@ -48,21 +51,24 @@ public class App {
     }
   }
   
-  private static File getApplicationDirectory() {
+  /**
+   * Gets the settings.
+   *
+   * @return the settings
+   * @throws IOException Signals that an I/O exception has occurred.
+   * @throws JSONException the JSON exception
+   */
+  private static Settings getSettings() throws IOException, JSONException {
     
-    File appDir = null;
+    Settings settings = null;
     
     if (System.getProperty(APP_DIR) != null) {
-      appDir = new File(System.getProperty(APP_DIR));
+      settings = new Settings(SETTINGS_JSON, new File(System.getProperty(APP_DIR)));
     }
     else {
-      appDir = new File("").getAbsoluteFile();
+      settings = new Settings(SETTINGS_JSON);
     }
     
-    if (!appDir.exists() || ! appDir.isDirectory()) {
-      throw new IllegalArgumentException("Application directory " + appDir + " is not valid.");
-    }
-    
-    return appDir;
+    return settings;
   }
 }

@@ -55,20 +55,23 @@ public class RenderingServer {
 	 */
 	public void start() throws Exception {
 	  
-	  SSLContext sslContext = null;
+	  // Setup some request handlers.
 	  StaticHandler resourceHandler = new StaticHandler(mSettings);
-	  
-	  sslContext = SSLContext.getInstance("TLS");
-	    
-	  sslContext.init(getKeyManagers(), null, null);
-	 
-    HttpHandler operationsHandler = buildOperationsRestApp();
+	  HttpHandler operationsHandler = buildOperationsRestApp();
     
     final PathHandler apiHandler = Handlers.path();
     
     apiHandler.addPrefixPath(API_PATH, operationsHandler);
     
-		Undertow server = Undertow.builder().addHttpListener(mSettings.getHttpPort(), mSettings.getHttpHost()).setHandler(new HttpHandler() {
+    // Create our ssl context for https
+	  SSLContext sslContext = SSLContext.getInstance("TLS");
+	    
+	  sslContext.init(getKeyManagers(), null, null);
+	 
+   
+    // This is just plain connection server, this just redirects to https
+		Undertow server = Undertow.builder().addHttpListener(
+		    mSettings.getHttpPort(), mSettings.getHttpHost()).setHandler(new HttpHandler() {
 		  
 			@Override
 			public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -80,15 +83,17 @@ public class RenderingServer {
 			}
 		}).build();
 		
+		
 		Builder sslServerBuilder = Undertow.builder();
 		
+		// enable http2 if specified.
 		if (mSettings.isHttp2Enabled()) {
 		  sslServerBuilder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 		}
 		
-		
-		Undertow sslServer = sslServerBuilder
-		    .addHttpsListener(mSettings.getHttpsPort(), mSettings.getHttpHost(), sslContext).setHandler(new HttpHandler() {
+		// This is our main server, this handles all requests.
+		Undertow sslServer = sslServerBuilder.addHttpsListener(
+		    mSettings.getHttpsPort(), mSettings.getHttpHost(), sslContext).setHandler(new HttpHandler() {
       
 		  @Override
       public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -113,8 +118,11 @@ public class RenderingServer {
 		sslServer.start();
 		server.start();
 
-		mLogger.info("Started server at http://" + mSettings.getHttpHost() + ":" + mSettings.getHttpPort() + "  Hit ^C to stop");
-		mLogger.info("Started SSL server at https://" + mSettings.getHttpHost() + ":" + mSettings.getHttpsPort() + "  Hit ^C to stop");
+		mLogger.info("Started server at http://" + mSettings.getHttpHost() + ":" + mSettings.getHttpPort());
+		mLogger.info("Started SSL server at https://" + mSettings.getHttpHost() + ":" + mSettings.getHttpsPort());
+		
+		System.out.println("\r\n--------------------------------");
+		System.out.println(" Hit ^C to exit.");
 	}
 	
 	/**

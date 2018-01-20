@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * The Class ObjectHelper.
+ * 
+ * Contains some helper methods for dealing with native javascript engine objects.
  */
 public class ObjectHelper {
 
@@ -38,6 +40,10 @@ public class ObjectHelper {
   /**
    * Stringify.
    *
+   * Calls the native Javascript JSON.stringify.
+   * This can be helpful if you get a Javascript object back from an invoked method or function
+   * and you need to get a string version of that.
+   * 
    * @param pObject the object
    * @return the string
    */
@@ -60,7 +66,10 @@ public class ObjectHelper {
   }
   
   /**
-   * Parses the.
+   * This calls the native Javascript JSON.parse.
+   * 
+   * This is useful if you have a string of json and you want to pass that into 
+   * a native javascript function as a parsed json object that it can understand.
    *
    * @param pString the string
    * @return the object

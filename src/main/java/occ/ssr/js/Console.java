@@ -9,6 +9,9 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * The Class Console.
+ * 
+ * This class will be the console object on the javascript engine.
+ * This wraps an concrete logger with pass through methods to the relative log level calls.
  */
 public class Console {
   

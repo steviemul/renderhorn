@@ -1,5 +1,6 @@
 {
   "name": "Cloudlake Server",
+  "root": "../../../",
   "http": {
     "host": "localhost",
     "port": "10080",
@@ -30,9 +31,7 @@
       "Framework/pkg"
     ],
     "initPackages": {
-      "1": "occ-component-loader",
-      "2": "occ-react-ui",
-      "3": "couldleak-server"
+      "1": "couldleak-server"
     }
   }
 }

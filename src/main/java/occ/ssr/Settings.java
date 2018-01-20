@@ -22,6 +22,7 @@ public class Settings {
   // Constants
   //---------------------------------------------------------------------------
   private static final String NAME = "name";
+  private static final String ROOT = "root";
   private static final String HTTP = "http";
   private static final String HOST = "host";
   private static final String PORT = "port";
@@ -202,9 +203,30 @@ public class Settings {
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws JSONException the JSON exception
    */
+  public Settings(String pLocation) throws IOException, JSONException {
+    loadSettings(pLocation);
+  }
+  
+  /**
+   * Instantiates a new settings.
+   *
+   * @param pLocation the location
+   * @throws IOException Signals that an I/O exception has occurred.
+   * @throws JSONException the JSON exception
+   */
   public Settings(String pLocation, File pRootDirectory) throws IOException, JSONException {
-    
     mRootDirectory = pRootDirectory;
+    loadSettings(pLocation);
+  }
+  
+  /**
+   * Load settings.
+   *
+   * @param pLocation the location
+   * @throws IOException Signals that an I/O exception has occurred.
+   * @throws JSONException the JSON exception
+   */
+  private void loadSettings(String pLocation) throws IOException, JSONException {
     
     try (InputStream in = Settings.class.getClassLoader().getResourceAsStream(pLocation)) {
       String contents = IOUtils.toString(in, UTF_8);
@@ -223,6 +245,15 @@ public class Settings {
   private void init(JSONObject pSettings) throws JSONException {
     
     mName = pSettings.getString(NAME);
+    
+    if (mRootDirectory == null) {
+      if (pSettings.has(ROOT)) {
+        mRootDirectory = new File(pSettings.getString(ROOT));
+      }
+      else {
+        mRootDirectory = new File("").getAbsoluteFile();
+      }
+    }
     
     JSONObject http = pSettings.getJSONObject(HTTP);
     mHttpHost = http.getString(HOST);
@@ -277,10 +308,13 @@ public class Settings {
     JSONArray indexes = pObject.names();
     List<String> items = new ArrayList<>();
     
-    for (int i=0;i<indexes.length();i++) {
-      String index = String.valueOf(i+1);
+    if (indexes != null) {
+      for (int i=0;i<indexes.length();i++) {
+        String index = String.valueOf(i+1);
+        
+        items.add(pObject.getString(index));
+      }
       
-      items.add(pObject.getString(index));
     }
     
     return items;

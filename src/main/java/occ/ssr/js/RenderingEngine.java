@@ -39,6 +39,7 @@ public class RenderingEngine {
   private static final String PACKAGE_JSON = "package.json";
   private static final String NAME = "name";
   private static final String DEPENDENCIES = "dependencies";
+  private static final String PEER_DEPENDENCIES = "peerDependencies";
   private static final String DIST = "dist";
   private static final String PACKAGE_EXT = ".js";
   
@@ -50,7 +51,7 @@ public class RenderingEngine {
   
   private final Settings mSettings;
   
-  private Map<String, Dependency> mPackages = new LinkedHashMap<>();
+  private Map<String, Library> mPackages = new LinkedHashMap<>();
   
   private static final String OCC = "occ";
   private static final String WAPI = "wapi";
@@ -100,7 +101,11 @@ public class RenderingEngine {
         
         Object[] invokeArgs = {response};
         
-        result = (String) invocableEngine.invokeMethod(mRenderer, RENDER_METHOD, invokeArgs);
+        // Multiple threads shouldn't operate on the same bindings object at the same time, in case there are mutations on global/window scoped items.
+        // Synchronzing seems better than creating a new bindings object and eval'ing all scripts again on each request.
+        synchronized (mRenderer) {
+          result = (String) invocableEngine.invokeMethod(mRenderer, RENDER_METHOD, invokeArgs);
+        }
         
         Date end = new Date();
         
@@ -126,18 +131,6 @@ public class RenderingEngine {
     mRenderedPages.clear();
     
     mLogger.info("Page cache cleared.");
-  }
-  
-  /**
-   * Dump env.
-   *
-   * @return the string
-   */
-  @SuppressWarnings("rawtypes")
-  public Map dumpEnv() {
-    Map bindings = (Map) mBindings;
-    
-    return bindings;
   }
   
   /**
@@ -167,7 +160,7 @@ public class RenderingEngine {
     try {
       mLogger.info("Setting up environment");
       
-      loadEnvironment();
+      loadInitScripts();
       
       mLogger.info("Searching for available packages");
       
@@ -188,9 +181,9 @@ public class RenderingEngine {
   }
   
   /**
-   * Load environment.
+   * Loads any initScripts specified.
    */
-  private void loadEnvironment() {
+  private void loadInitScripts() {
     
     try {
       for (String initScript : mSettings.getInitScripts()) {
@@ -211,16 +204,17 @@ public class RenderingEngine {
    */
   private void loadPackage(String pPackageName) throws IOException, ScriptException {
     
-    Dependency packageToLoad = mPackages.get(pPackageName);
+    Library packageToLoad = mPackages.get(pPackageName);
     
     if (packageToLoad == null || packageToLoad.isLoaded()) {
       return;
     }
     
+    // Load dependencies first before we eval the package script.
     if (packageToLoad.getDependencies().size() > 0) {
     
       for (String dependency : packageToLoad.getDependencies()) {
-        Dependency jsPackage = mPackages.get(dependency);
+        Library jsPackage = mPackages.get(dependency);
         
         if (jsPackage != null && !jsPackage.isLoaded()) {
           loadPackage(jsPackage.getName());
@@ -274,7 +268,8 @@ public class RenderingEngine {
   }
   
   /**
-   * Scan libraries.
+   * Scans specified package locations for potential packages 
+   * that may need to be loaded.
    */
   private void scanLibraries() {
     
@@ -287,7 +282,9 @@ public class RenderingEngine {
   }
   
   /**
-   * Scan directory.
+   * Scans the specified directory and subdirectories for
+   * packages that may be loaded later. These are identified
+   * by the existence of a package.json in the directory.
    *
    * @param pDirectory the directory
    */
@@ -303,20 +300,12 @@ public class RenderingEngine {
         
         String packageName = json.getString(NAME);
         
-        Dependency jsPackage = mPackages.containsKey(packageName) ? mPackages.get(packageName) : new Dependency(packageName);
+        Library jsPackage = mPackages.containsKey(packageName) ? mPackages.get(packageName) : new Library(packageName);
         
-        JSONObject dependencies = json.optJSONObject(DEPENDENCIES);
+        processDependencies(jsPackage, json.optJSONObject(DEPENDENCIES));
+        processDependencies(jsPackage, json.optJSONObject(PEER_DEPENDENCIES));
         
-        if (dependencies != null) {
-          JSONArray names = dependencies.names();
-          
-          if (names != null) {
-            for (int i=0;i<names.length();i++) {
-              jsPackage.addDependency(names.getString(i));
-            }
-          }
-        }
-        
+        // We're assuming the script we load will be in a "dist" directory, may need to make this more clever.
         File distDir = new File(pDirectory, DIST);
         
         if (distDir.exists()) {
@@ -338,6 +327,26 @@ public class RenderingEngine {
       for (File child : children) {
         if (child.isDirectory()) {
           scanDirectory(child);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Process dependencies.
+   *
+   * @param pLibrary the library
+   * @param pDependencies the dependencies
+   * @throws JSONException 
+   */
+  private void processDependencies(Library pLibrary, JSONObject pDependencies) throws JSONException {
+    
+    if (pDependencies != null) {
+      JSONArray names = pDependencies.names();
+      
+      if (names != null) {
+        for (int i=0;i<names.length();i++) {
+          pLibrary.addDependency(names.getString(i));
         }
       }
     }

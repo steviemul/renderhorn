@@ -1,8 +1,8 @@
 .classpath
 .gradle/
 .project
+.settings/
 bin/
 build/
-.settings/
 gradle/
 logs/

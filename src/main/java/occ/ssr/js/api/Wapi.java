@@ -13,6 +13,9 @@ import occ.ssr.js.ObjectHelper;
 
 /**
  * The Class Wapi.
+ * 
+ * This class is intended to be added to a javascript engine's bindings object
+ * and its methods executed by javascript methods.
  */
 public class Wapi {
   
@@ -41,8 +44,10 @@ public class Wapi {
     
     String jsonPath = JSON_DIR + pPageId + JSON_EXT;
     
+    // Loads static json for now, eventually this could query database's etc.
     String pageJson = getJson(jsonPath);
     
+    // turn our json string into a JSON object the javascript engine can understand.
     return mObjectHelper.parse(pageJson);
   }
   
