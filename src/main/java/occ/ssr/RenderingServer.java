@@ -122,7 +122,7 @@ public class RenderingServer {
 		mLogger.info("Started SSL server at https://" + mSettings.getHttpHost() + ":" + mSettings.getHttpsPort());
 		
 		System.out.println("\r\n--------------------------------");
-		System.out.println(" Hit ^C to exit.");
+		System.out.println(" Hit ^C to exit.\r\n");
 	}
 	
 	/**

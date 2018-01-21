@@ -16,14 +16,11 @@ function pushResources(pHttpResponse, pPackages) {
       try {
         var state = occ.wapi.getPage('allProducts');
 
-        // use a copy of the state for rendering.
-        var stateToRender = Object.assign({}, state);
-
-        var html = server.renderToString(stateToRender);
+        var html = server.renderToString(state);
 
         console.info("Successfully called renderToString");
 
-        pushResources(pHttpResponse, stateToRender.pageRepository.packages);
+        pushResources(pHttpResponse, state.pageRepository.packages);
 
         return html;
       }
