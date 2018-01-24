@@ -1,11 +1,20 @@
 {
   "name": "Cloudlake Server",
   "root": "../../../",
+  "watchingPackages":false,
+  "notifyingPort":10444,
   "http": {
     "host": "localhost",
     "port": "10080",
     "sslPort": "10443",
-    "staticCacheTime": 60000
+    "staticCacheTime": 60000,
+    "sslKeystore":"localhost.p12",
+    "sslKeystorePwd":"changeit",
+    "sslKeystoreType":"PKCS12",
+    "proxy": {
+      "/ccstoreui": "http://blr00ako.idc.oracle.com:8080",
+      "/ccstore": "http://blr00ako.idc.oracle.com:8080"
+    }
   },
   "http2": {
     "enabled": true,
@@ -31,7 +40,8 @@
       "Framework/pkg"
     ],
     "initPackages": {
-      "1": "couldleak-server"
+      "1": "couldleak",
+      "2": "couldleak-server"
     }
   }
 }

@@ -43,7 +43,11 @@ public class App {
       
       server.start();
       
-      Registry.init(settings, engine);
+      NotifyingServer notifyingServer = new NotifyingServer(settings);
+      
+      notifyingServer.start();
+      
+      Registry.init(settings, engine, notifyingServer);
     }
     catch (Exception e) {
       mLogger.error("Unable to start server." ,e);

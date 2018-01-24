@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -23,11 +25,17 @@ public class Settings {
   //---------------------------------------------------------------------------
   private static final String NAME = "name";
   private static final String ROOT = "root";
+  private static final String WATCHING_PACKAGES = "watchingPackages";
+  private static final String NOTIFYING_PORT = "notifyingPort";
   private static final String HTTP = "http";
   private static final String HOST = "host";
   private static final String PORT = "port";
+  private static final String PROXY = "proxy";
   private static final String STATIC_CACHE_TIME = "staticCacheTime";
   private static final String SSL_PORT = "sslPort";
+  private static final String SSL_KEYSTORE = "sslKeystore";
+  private static final String SSL_KEYSTORE_PWD = "sslKeystorePwd";
+  private static final String SSL_KEYSTORE_TYPE = "sslKeystoreType";
   private static final String HTTP2 = "http2";
   private static final String ENABLED = "enabled";
   private static final String PUSH_ENABLED = "pushEnabled";
@@ -64,6 +72,28 @@ public class Settings {
     return mName;
   }
   
+  private boolean mWatchingPackages;
+  
+  /**
+   * Checks if is watching packages.
+   *
+   * @return true, if is watching packages
+   */
+  public boolean isWatchingPackages() {
+    return mWatchingPackages;
+  }
+  
+  private int mNotifyingPort;
+  
+  /**
+   * Gets the notifying port.
+   *
+   * @return the notifying port
+   */
+  public int getNotifyingPort() {
+    return mNotifyingPort;
+  }
+  
   private String mHttpHost;
   
   /**
@@ -95,6 +125,50 @@ public class Settings {
    */
   public int getHttpsPort() {
     return mHttpsPort;
+  }
+  
+  private Map<String, String> mProxyPaths;
+  
+  /**
+   * Gets the proxy paths.
+   *
+   * @return the proxy paths
+   */
+  public Map<String, String> getProxyPaths() {
+    return new HashMap<>(mProxyPaths);
+  }
+  
+  private String mSSLKeystore;
+  
+  /**
+   * Gets the SSL keystore.
+   *
+   * @return the SSL keystore
+   */
+  public String getSSLKeystore() {
+    return mSSLKeystore;
+  }
+  
+  private String mSSLKeystorePwd;
+  
+  /**
+   * Gets the SSL keystore pwd.
+   *
+   * @return the SSL keystore pwd
+   */
+  public String getSSLKeystorePwd() {
+    return mSSLKeystorePwd;
+  }
+  
+  private String mSSLKeystoreType;
+  
+  /**
+   * Gets the SSL keystore type.
+   *
+   * @return the SSL keystore type
+   */
+  public String getSSLKeystoreType() {
+    return mSSLKeystoreType;
   }
   
   private int mStaticCacheTime;
@@ -255,11 +329,18 @@ public class Settings {
       }
     }
     
+    mWatchingPackages = pSettings.optBoolean(WATCHING_PACKAGES, false);
+    mNotifyingPort = pSettings.optInt(NOTIFYING_PORT, 0);
+    
     JSONObject http = pSettings.getJSONObject(HTTP);
     mHttpHost = http.getString(HOST);
     mHttpPort = http.getInt(PORT);
     mHttpsPort = http.getInt(SSL_PORT);
+    mSSLKeystore = http.getString(SSL_KEYSTORE);
+    mSSLKeystorePwd = http.getString(SSL_KEYSTORE_PWD);
+    mSSLKeystoreType = http.getString(SSL_KEYSTORE_TYPE);
     mStaticCacheTime = http.getInt(STATIC_CACHE_TIME);
+    mProxyPaths = getObjectAsMap(http.optJSONObject(PROXY));
     
     JSONObject http2 = pSettings.getJSONObject(HTTP2);
     mHttp2Enabled = http2.getBoolean(ENABLED);
@@ -296,6 +377,35 @@ public class Settings {
     
     return items;
   }
+  
+  /**
+   * Gets the object as map.
+   *
+   * @param pObject the object
+   * @return the object as map
+   * @throws JSONException the JSON exception
+   */
+  private Map<String, String> getObjectAsMap(JSONObject pObject) throws JSONException {
+    
+    Map<String, String> pMap = new HashMap<>();
+    
+    if (pObject != null ) {
+      JSONArray keys = pObject.names();
+     
+      if (keys != null) {
+        for (int i=0;i<keys.length();i++) {
+          String key = keys.getString(i);
+          
+          pMap.put(key, pObject.getString(key));
+        }
+        
+      }
+    }
+    
+    
+    return pMap;
+  }
+
   /**
    * Gets the sorted items.
    *

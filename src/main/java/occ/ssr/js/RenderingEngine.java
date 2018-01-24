@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 
 import io.undertow.server.HttpServerExchange;
 import occ.ssr.Settings;
+import occ.ssr.io.PackageWatcher;
 import occ.ssr.js.api.Wapi;
 import occ.ssr.renderer.http.Response;
 
@@ -42,6 +44,8 @@ public class RenderingEngine {
   private static final String PEER_DEPENDENCIES = "peerDependencies";
   private static final String DIST = "dist";
   private static final String PACKAGE_EXT = ".js";
+  private static final String HEAD = "</head>";
+  private static final String WS_SOURCE = "globals/ws.js";
   
   private static Log mLogger = LogFactory.getLog(RenderingEngine.class);
   
@@ -59,8 +63,13 @@ public class RenderingEngine {
   
   private Object mRenderer = null;
   private static final String RENDER_METHOD = "render";
+  private static final String STATE_METHOD = "getState";
   
   private Map<String, String> mRenderedPages = new HashMap<>();
+  
+  private boolean mStarted = false;
+  
+  private PackageWatcher mPackageWatcher;
   
   /**
    * Instantiates a new engine.
@@ -70,9 +79,14 @@ public class RenderingEngine {
   public RenderingEngine(Settings pSettings) throws Exception {
     
     mSettings = pSettings;
+    mPackageWatcher = new PackageWatcher(pSettings);
     
     initEngine();
     initEnvironment();
+    
+    mPackageWatcher.startWatching();
+    
+    mStarted = true;
   }
   
   /**
@@ -99,12 +113,18 @@ public class RenderingEngine {
         
         Response response = new Response(pExchange, mSettings);
         
-        Object[] invokeArgs = {response};
+        Object state = invocableEngine.invokeMethod(mRenderer, STATE_METHOD, new Object[0]);
+        
+        Object[] invokeArgs = {response, state};
         
         // Multiple threads shouldn't operate on the same bindings object at the same time, in case there are mutations on global/window scoped items.
         // Synchronzing seems better than creating a new bindings object and eval'ing all scripts again on each request.
         synchronized (mRenderer) {
           result = (String) invocableEngine.invokeMethod(mRenderer, RENDER_METHOD, invokeArgs);
+          
+          if (mSettings.isWatchingPackages()) {
+            result = addNotifyingReceiver(result);
+          }
         }
         
         Date end = new Date();
@@ -125,6 +145,16 @@ public class RenderingEngine {
   }
   
   /**
+   * Reload.
+   * @throws Exception 
+   */
+  public void reload() throws Exception {
+    mPackages.clear();
+    initEngine(true);
+    initEnvironment();
+  }
+  
+  /**
    * Clear cache.
    */
   public void clearCache() throws Exception {
@@ -134,13 +164,65 @@ public class RenderingEngine {
   }
   
   /**
+   * Adds the notifying receiver.
+   *
+   * @param pHtml the html
+   * @return the string
+   */
+  private String addNotifyingReceiver(String pHtml) {
+   
+    try {
+      int insertionPoint = pHtml.indexOf(HEAD);
+      
+      if (insertionPoint > -1) {
+        String ws = "<script>" + getScriptSource(WS_SOURCE) + "</script>";
+        
+        pHtml = pHtml.substring(0, insertionPoint) + ws + pHtml.substring(insertionPoint);
+      }
+    }
+    catch (Exception e) {
+      mLogger.warn("Unable to add script to html", e);
+    }
+    
+    return pHtml;
+  }
+  
+  /**
+   * Watch file.
+   *
+   * @param pFile the file
+   */
+  private void watchFile(String pFile) {
+    
+    if (!mStarted) {
+      mPackageWatcher.addPath(pFile);
+    }
+  }
+  
+  /**
    * Inits the engine.
    */
   private void initEngine() {
+    initEngine(false);
+  }
+  
+  /**
+   * Inits the engine.
+   *
+   * @param pReload the reload
+   */
+  private void initEngine(boolean pReload) {
     
     mJSEngine = mManager.getEngineByName(SCRIPT_ENGINE);
     
-    mBindings = mJSEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+    if (pReload) {
+      mBindings = mJSEngine.createBindings();
+      
+      mJSEngine.setBindings(mBindings, ScriptContext.ENGINE_SCOPE);
+    }
+    else {
+      mBindings = mJSEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+    }
     
     ObjectHelper objectHelper = new ObjectHelper(mJSEngine, mBindings);
     
@@ -228,6 +310,7 @@ public class RenderingEngine {
     // Check again incase it was loaded by another dependency.
     if (!packageToLoad.isLoaded()) {
       try (InputStream in = new FileInputStream(packageToLoad.getPath())) {
+        
         String source = IOUtils.toString(in, UTF_8);
         
         mJSEngine.eval(source);
@@ -235,6 +318,8 @@ public class RenderingEngine {
         packageToLoad.setLoaded(true);
         
         mLogger.info("Successfully loaded package " + packageToLoad);
+        
+        watchFile(packageToLoad.getPath());
       }
       catch (ScriptException e) {
         mLogger.error("Error loading " + packageToLoad, e);
@@ -257,6 +342,10 @@ public class RenderingEngine {
     Object result = null;
     
     try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(pResourcePath)) {
+      if (in == null) {
+        throw new FileNotFoundException("Unable to locate resource " + pResourcePath);
+      }
+      
       String source = IOUtils.toString(in, UTF_8);
       
       result = mJSEngine.eval(source);
@@ -265,6 +354,26 @@ public class RenderingEngine {
     }
     
     return result;
+  }
+  
+  /**
+   * Gets the script source.
+   *
+   * @param pPath the path
+   * @return the script source
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
+  private String getScriptSource(String pPath) throws IOException {
+    
+    try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(pPath)) {
+      if (in == null) {
+        throw new FileNotFoundException("Unable to locate resource " + pPath);
+      }
+      
+      String source = IOUtils.toString(in, UTF_8);
+      
+      return source;
+    }
   }
   
   /**
@@ -324,9 +433,11 @@ public class RenderingEngine {
     else {
       File[] children = pDirectory.listFiles();
       
-      for (File child : children) {
-        if (child.isDirectory()) {
-          scanDirectory(child);
+      if (children != null) {
+        for (File child : children) {
+          if (child.isDirectory()) {
+            scanDirectory(child);
+          }
         }
       }
     }

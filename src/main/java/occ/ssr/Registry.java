@@ -29,14 +29,26 @@ public class Registry {
     return mEngine;
   }
   
+  private static NotifyingServer mNotifyingServer;
+  
+  /**
+   * Gets the notifying server.
+   *
+   * @return the notifying server
+   */
+  public static NotifyingServer getNotifyingServer() {
+    return mNotifyingServer;
+  }
+  
   /**
    * Inits the.
    *
    * @param pSettings the settings
    * @param pRenderingEngine the rendering engine
    */
-  static void init( Settings pSettings, RenderingEngine pRenderingEngine) {
+  static void init( Settings pSettings, RenderingEngine pRenderingEngine, NotifyingServer pNotifyingServer) {
     mSettings = pSettings;
     mEngine = pRenderingEngine;
+    mNotifyingServer = pNotifyingServer;
   }
 }

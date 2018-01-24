@@ -12,10 +12,11 @@ function pushResources(pHttpResponse, pPackages) {
 (function(server) {
 
   return {
-    render : function(pHttpResponse) {
+    getState : function() {
+      return occ.wapi.getPage('allProducts');
+    },
+    render : function(pHttpResponse, state) {
       try {
-        var state = occ.wapi.getPage('allProducts');
-
         var html = server.renderToString(state);
 
         console.info("Successfully called renderToString");

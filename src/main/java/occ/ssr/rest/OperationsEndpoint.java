@@ -23,6 +23,7 @@ public class OperationsEndpoint {
 
   private static Log mLogger = LogFactory.getLog(OperationsEndpoint.class);
   private static final String OP_CLEAR = "clear";
+  private static final String OP_RELOAD = "reload";
   
   /**
    * Process.
@@ -38,17 +39,22 @@ public class OperationsEndpoint {
     Object result = "";
     
     try {
-      if (OP_CLEAR.equals(op)) {
-        Map response = new HashMap<>();
-        
+      switch (op) {
+      case OP_CLEAR:
         Registry.getRenderingEngine().clearCache();
-        response.put("result", "success");
-        
-        result = response;
+        break;
+      case OP_RELOAD:
+        Registry.getRenderingEngine().reload();
+        break;
       }
+      
+      Map response = new HashMap<>();
+      response.put("result", "success");
+      
+      result = response;
     }
     catch (Exception e) {
-      mLogger.error("Failed to reload engine.", e);
+      mLogger.error("Failed to call operation.", e);
       
       Map response = new HashMap<>();
       
