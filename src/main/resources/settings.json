@@ -1,7 +1,8 @@
 {
   "name": "Cloudlake Server",
   "root": "../../../",
-  "watchingPackages":false,
+  "watchingPackages":true,
+  "hotReload":true,
   "notifyingPort":10444,
   "http": {
     "host": "localhost",
@@ -30,10 +31,11 @@
     "initScripts": {
       "1": "globals/global.js",
       "2": "es6/es6-shim.min.js",
-      "3": "react/react.production.min.js",
-      "4": "react/react-dom.production.min.js",
-      "5": "react/react-dom-server.browser.production.min.js",
-      "6": "globals/init.js"
+      "3": "es6/promise.js",
+      "4": "react/react.production.min.js",
+      "5": "react/react-dom.production.min.js",
+      "6": "react/react-dom-server.browser.production.min.js",
+      "7": "globals/init.js"
     },
     "packageLocations": [
       "Apps/Couldleak/pkg",

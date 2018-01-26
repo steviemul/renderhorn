@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import io.undertow.server.HttpServerExchange;
 import occ.ssr.Settings;
 import occ.ssr.io.PackageWatcher;
+import occ.ssr.js.api.Timer;
 import occ.ssr.js.api.Wapi;
 import occ.ssr.renderer.http.Response;
 
@@ -60,6 +61,7 @@ public class RenderingEngine {
   private static final String OCC = "occ";
   private static final String WAPI = "wapi";
   private static final String CONSOLE = "console";
+  private static final String TIMER = "timer";
   
   private Object mRenderer = null;
   private static final String RENDER_METHOD = "render";
@@ -230,6 +232,7 @@ public class RenderingEngine {
     
     context.put(WAPI, new Wapi(objectHelper));
     context.put(CONSOLE, new Console(mSettings.getName()));
+    context.put(TIMER, new  Timer());
     
     mBindings.put(OCC, context);
   }

@@ -32,5 +32,9 @@ var console = {
   }
 };
 
+function setTimeout(pCallback, pDelay) {
+  occ.timer.run(pCallback, pDelay);
+}
+
 
 
